@@ -1,14 +1,33 @@
-who_data README
-==================
+WHO (World Health Organization) Data App
+=========================================
 
-Getting Started
----------------
+This is a library that will serve a data ingestion and parsing library
+and web application which will store and search on open source data 
+taken from the WHO website.
 
-- cd <directory containing this file>
+Requirements
+------------
+	Python3.5
+	virtualenv
 
-- $VENV/bin/pip install -e .
+Setup
+-----
+	- clone repository and CD into base directory
+	
+	- create and activate a python3.5 virtual environment:
+		$ virtualenv -p python3.5 virtual_env
+		$ source virtual_env/bin/activate
+	
+	- install requirements:
+		$ pip install -r requirements.txt
 
-- $VENV/bin/initialize_who_data_db development.ini
+	- run setup.py:
+		$ python setup.py develop
 
-- $VENV/bin/pserve development.ini
+Tests
+-----
+Run tests with the nosetests command or run tests for a specific function.
 
+Tests are located in directory closest to the thing they test.
+Example, to run ingest module tests:
+	$ nosetests who_data/bin/ingest/tests
