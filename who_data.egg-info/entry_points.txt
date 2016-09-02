@@ -1,0 +1,5 @@
+      [paste.app_factory]
+      main = who_data:main
+      [console_scripts]
+      initialize_who_data_db = who_data.scripts.initializedb:main
+      
