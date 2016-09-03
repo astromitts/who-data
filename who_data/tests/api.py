@@ -65,7 +65,6 @@ class APITests(IntegrationTestBase):
             None
         )
 
-
     def country_resource_page(self):
         page = self.TestApp.get(
             '/who-data/api/v1/countries/brunei-darussalam',
@@ -79,7 +78,6 @@ class APITests(IntegrationTestBase):
             page.json['resource']['name'],
             'Brunei Darussalam'
         )
-
 
     def country_resource_notfound(self):
         self.TestApp.get(

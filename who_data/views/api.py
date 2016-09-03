@@ -148,7 +148,6 @@ class APIResourcePage(APIBase):
         ])
         self.return_dict['resource'] = OrderedDict()
 
-
     def __call__(self):
         return self.return_dict
 

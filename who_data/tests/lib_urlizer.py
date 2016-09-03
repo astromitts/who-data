@@ -23,4 +23,3 @@ class urlizer(unittest.TestCase):
         for name_in, name_out in expected_results.items():
             url_name = urlize(name_in)
             self.assertEquals(name_out, url_name)
-
