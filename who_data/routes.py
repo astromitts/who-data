@@ -1,8 +1,13 @@
 def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
-    # empty search result page, used for testing
-    config.add_route('search_ping', '/search/ping')
+    config.route_prefix = 'who-data'
 
-    # Country search end point
-    config.add_route('search_country', '/search/countries')
-    config.add_route('search_country', '/search/countries/{country-url-name}')
+    routes = [
+        ('api_v1_ping', '/api/{api_version}/ping'),
+        ('api_v1_country_landing', '/api/{api_version}/countries'),
+        ('api_v1_country', '/api/{api_version}/countries/{country_url_name}'),
+    ]
+
+    config.add_route
+    for route in routes:
+        config.add_route(route[0], route[1])

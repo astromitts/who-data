@@ -6,6 +6,7 @@ import zope.sqlalchemy
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
 from who_data.models.who import Country, WHODisease, WHODiseaseReport  # noqa
+from who_data.models.base import Base, DBSession
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
@@ -16,8 +17,12 @@ def get_engine(settings, prefix='sqlalchemy.'):
     # engine is coming from a raw configparser instance instead of pserve
     # i.e it was probably called from nosetests
     if 'settings' in settings:
-        return engine_from_config(settings['settings']['app:main'], prefix)
-    return engine_from_config(settings, prefix)
+        engine = engine_from_config(settings['settings']['app:main'], prefix)
+    else:
+        engine = engine_from_config(settings, prefix)
+    DBSession.configure(bind=engine)
+    Base.metadata.bind = engine
+    return engine
 
 
 
