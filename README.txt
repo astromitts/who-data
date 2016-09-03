@@ -55,7 +55,10 @@ Tests
 Run tests with the nosetests command or run tests for a specific function.
 
 Tests are located in directory closest to the thing they test.
-Example, to run ingest module tests:
+Example, to run pyramid app tests:
+    $ nosetests who_data/tests
+
+To run ingest module tests:
     $ nosetests who_data/bin/ingest/tests
 
 
