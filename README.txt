@@ -5,10 +5,12 @@ This is a library that will serve a data ingestion and parsing library
 and web application which will store and search on open source data 
 taken from the WHO website.
 
+
 Requirements
 ------------
     Python3.5
     virtualenv
+
 
 Setup
 -----
@@ -33,6 +35,7 @@ Setup
     - run alembic upgrades
 	$ alembic upgrade head
 
+
 Data Ingestion
 --------------
 To ingest data into the database, make sure you have CSV files that are mapped
@@ -55,9 +58,21 @@ Tests are located in directory closest to the thing they test.
 Example, to run ingest module tests:
     $ nosetests who_data/bin/ingest/tests
 
+
 Linting
 -------
 This repository is linted using the standard flake8 library,
 ignoring error codes E402 and E711:
 
     $ flake8 --ignore=E402,E711
+
+
+Running the application
+-----------------------
+With the virtual environment activated, update development.ini to match
+your database configuration, run with paster:
+    
+    $ pserve development.ini
+
+Navigate to an API url, such as:
+    http://localhost:<your-port-number/who-data/api/v1/countries
