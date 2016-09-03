@@ -4,6 +4,7 @@ Tests for the WHOFileParser class
 
 from who_data.bin.ingest.tests import TestBase
 
+
 class WHOFileParser(TestBase):
     def parse(self):
         from who_data.bin.ingest.lib.who_file_parser import WHOFileParser

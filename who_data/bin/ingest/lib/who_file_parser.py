@@ -1,13 +1,14 @@
-'''
+"""
 Class for a standard WHO Data file for a tropical disease cases reported
 CSV File
 
 This class should take in an absolute filepath to a CSV and parse the file,
 storing the information in a dictionary
-'''
+"""
 
 import csv
 from who_data.bin.ingest.lib.file_hash import file_hash
+
 
 class WHOFileParser(object):
 
@@ -29,7 +30,6 @@ class WHOFileParser(object):
         '''
         parsed_header = [int(i[-4:]) for i in header_row]
         return parsed_header
-
 
     def parse(self):
         '''

@@ -7,31 +7,31 @@ taken from the WHO website.
 
 Requirements
 ------------
-	Python3.5
-	virtualenv
+    Python3.5
+    virtualenv
 
 Setup
 -----
-	- clone repository and CD into base directory
+    - clone repository and CD into base directory
 	
-	- create and activate a python3.5 virtual environment:
-		$ virtualenv -p python3.5 virtual_env
-		$ source virtual_env/bin/activate
+    - create and activate a python3.5 virtual environment:
+        $ virtualenv -p python3.5 virtual_env
+	$ source virtual_env/bin/activate
 	
-	- install requirements:
-		$ pip install -r requirements.txt
+    - install requirements:
+	$ pip install -r requirements.txt
 
-	- run setup.py:
-		$ python setup.py develop
+    - run setup.py:
+	$ python setup.py develop
 
-	- create database assets:
-		$ psql postgres
-		# create database <database-name>
-		# \q
+    - create database assets:
+	$ psql postgres
+	# create database <database-name>
+	# \q
 
-	- edit development.ini and alembic.ini to use your "database-name"
-	- run alembic upgrades
-		$ alembic upgrade head
+    - edit development.ini and alembic.ini to use your "database-name"
+    - run alembic upgrades
+	$ alembic upgrade head
 
 Data Ingestion
 --------------
@@ -44,7 +44,7 @@ United States, 7583, 8275, 2575 ....
 
 Run the ingest script and pass in an INI file for the configuration of the 
 database you wish to populate:
-	$ python who_data/bin/ingest/ingest.py development.ini
+    $ python who_data/bin/ingest/ingest.py development.ini
 
 
 Tests
@@ -53,4 +53,11 @@ Run tests with the nosetests command or run tests for a specific function.
 
 Tests are located in directory closest to the thing they test.
 Example, to run ingest module tests:
-	$ nosetests who_data/bin/ingest/tests
+    $ nosetests who_data/bin/ingest/tests
+
+Linting
+-------
+This repository is linted using the standard flake8 library,
+ignoring error code E402:
+
+    $ flake8 --ignore=E402

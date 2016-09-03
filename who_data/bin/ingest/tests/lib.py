@@ -1,8 +1,9 @@
-'''
+"""
 Tests for who-data ingest module's library functions and classes
-'''
+"""
 
 from who_data.bin.ingest.tests import TestBase
+
 
 class file_hash(TestBase):
 

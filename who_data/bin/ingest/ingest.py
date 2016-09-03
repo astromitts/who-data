@@ -6,9 +6,8 @@ from who_data.bin.countries import (
     CountryAlias,
     sanitize_country_name
 )
-from who_data.bin.ingest.bin.file_map import primary_entity_file_map
 from who_data.bin.ingest.lib.who_file_parser import WHOFileParser
-from who_data.bin.ingest import ABSOLUTE_FILE_PATH
+from who_data.bin.ingest import ABSOLUTE_FILE_PATH, primary_entity_file_map
 from who_data.models.who import Country, WHODisease, WHODiseaseReport
 
 

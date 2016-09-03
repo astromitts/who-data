@@ -32,7 +32,8 @@ def upgrade():
     op.execute(
         'create index ix_country_name_lower on datastore.country(lower(name))'
     )
-    op.execute('create index ix_country_alias_lower on datastore.country '
+    op.execute(
+        'create index ix_country_alias_lower on datastore.country '
         'using gin ("alias")'
     )
     op.create_table(

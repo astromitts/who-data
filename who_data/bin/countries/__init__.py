@@ -23,6 +23,7 @@ known_name_mapping = {
     'United States': ['united states of america', 'USA'],
 }
 
+
 def sanitize_country_name(name):
     return name.replace('(', '').replace(')', '').replace(',', '').lower()
 
