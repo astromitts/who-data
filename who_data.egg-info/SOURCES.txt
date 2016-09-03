@@ -30,7 +30,7 @@ who_data/bin/ingest/tests/test_file_for_md5.txt
 who_data/bin/ingest/tests/who_file_parser.py
 who_data/models/__init__.py
 who_data/models/meta.py
-who_data/models/mymodel.py
+who_data/models/who.py
 who_data/scripts/__init__.py
 who_data/scripts/initializedb.py
 who_data/static/pyramid-16x16.png

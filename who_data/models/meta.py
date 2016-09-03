@@ -14,3 +14,9 @@ NAMING_CONVENTION = {
 
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
 Base = declarative_base(metadata=metadata)
+
+class DatastoreBase(Base):
+    __abstract__ = True
+    __table_args = {
+        'schema': 'datastore',
+    }

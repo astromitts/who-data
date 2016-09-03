@@ -9,13 +9,13 @@ from pyramid.paster import (
 
 from pyramid.scripts.common import parse_vars
 
-from ..models.meta import Base
-from ..models import (
+from who_data.models.meta import Base
+from who_data.models import (
     get_engine,
     get_session_factory,
     get_tm_session,
     )
-from ..models import MyModel
+from who_data.models.who import Country, WHODisease, WHODiseaseReport
 
 
 def usage(argv):
@@ -40,6 +40,6 @@ def main(argv=sys.argv):
 
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
-
-        model = MyModel(name='one', value=1)
-        dbsession.add(model)
+        for model in [Country, WHODisease, WHODiseaseReport]:
+            load_model = model()
+            dbsession.add(load_model)

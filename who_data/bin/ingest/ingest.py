@@ -1,7 +1,7 @@
 import sys
-from bin.file_map import primary_entity_file_map
-from lib.who_file_parser import WHOFileParser
-from __init__ import ABSOLUTE_FILE_PATH
+from who_data.bin.ingest.bin.file_map import primary_entity_file_map
+from who_data.bin.ingest.lib.who_file_parser import WHOFileParser
+from who_data.bin.ingest import ABSOLUTE_FILE_PATH
 
 
 def main():
