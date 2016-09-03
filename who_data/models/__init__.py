@@ -13,7 +13,12 @@ configure_mappers()
 
 
 def get_engine(settings, prefix='sqlalchemy.'):
+    # engine is coming from a raw configparser instance instead of pserve
+    # i.e it was probably called from nosetests
+    if 'settings' in settings:
+        return engine_from_config(settings['settings']['app:main'], prefix)
     return engine_from_config(settings, prefix)
+
 
 
 def get_session_factory(engine):
@@ -57,11 +62,11 @@ def includeme(config):
 
     """
     settings = config.get_settings()
-
     # use pyramid_tm to hook the transaction lifecycle to the request
     config.include('pyramid_tm')
 
     session_factory = get_session_factory(get_engine(settings))
+
     config.registry['dbsession_factory'] = session_factory
 
     # make request.dbsession available for use in Pyramid
