@@ -32,6 +32,15 @@ Description: WHO (World Health Organization) Data App
         	- run setup.py:
         		$ python setup.py develop
         
+        	- create database assets:
+        		$ psql postgres
+        		# create database <database-name>
+        		# \q
+        
+        	- edit development.ini and alembic.ini to use your "database-name"
+        	- run alembic upgrades
+        		$ alembic upgrade head
+        
         Tests
         -----
         Run tests with the nosetests command or run tests for a specific function.

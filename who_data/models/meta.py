@@ -1,4 +1,9 @@
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import (
+    scoped_session,
+    sessionmaker,
+)
+from zope.sqlalchemy import ZopeTransactionExtension
 from sqlalchemy.schema import MetaData
 
 # Recommended naming convention used by Alembic, as various different database
@@ -14,9 +19,4 @@ NAMING_CONVENTION = {
 
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
 Base = declarative_base(metadata=metadata)
-
-class DatastoreBase(Base):
-    __abstract__ = True
-    __table_args = {
-        'schema': 'datastore',
-    }
+DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))

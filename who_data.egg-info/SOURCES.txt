@@ -1,6 +1,7 @@
 CHANGES.txt
 MANIFEST.in
 README.txt
+alembic.ini
 development.ini
 production.ini
 pytest.ini
@@ -8,7 +9,6 @@ requirements.txt
 setup.py
 who_data/__init__.py
 who_data/routes.py
-who_data/tests.py
 who_data.egg-info/PKG-INFO
 who_data.egg-info/SOURCES.txt
 who_data.egg-info/dependency_links.txt
@@ -17,6 +17,7 @@ who_data.egg-info/not-zip-safe
 who_data.egg-info/requires.txt
 who_data.egg-info/top_level.txt
 who_data/bin/__init__.py
+who_data/bin/countries/__init__.py
 who_data/bin/ingest/__init__.py
 who_data/bin/ingest/ingest.py
 who_data/bin/ingest/bin/__init__.py
@@ -29,6 +30,7 @@ who_data/bin/ingest/tests/lib.py
 who_data/bin/ingest/tests/test_file_for_md5.txt
 who_data/bin/ingest/tests/who_file_parser.py
 who_data/models/__init__.py
+who_data/models/base.py
 who_data/models/meta.py
 who_data/models/who.py
 who_data/scripts/__init__.py
