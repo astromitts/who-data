@@ -26,9 +26,13 @@ class DatastoreBase(Base):
         return row_dict
 
     @classmethod
-    def search(cls, to_dict=True, **kw):
+    def search(cls, to_dict=True, limit=None, offset=None, **kw):
         q = cls.session.query(cls)
         count = q.count()
+        if limit:
+            q = q.limit(limit)
+        if offset:
+            q = q.offset(offset)
         res = q.all()
         if to_dict:
             json_res = []
@@ -37,3 +41,13 @@ class DatastoreBase(Base):
             return count, json_res
         else:
             return count, res
+
+    @classmethod
+    def fetch_first(cls, to_dict=True, **kw):
+        q = cls.session.query(cls)
+        for k, w in kw.items():
+            q = q.filter(getattr(cls, k) == w)
+        res = q.first()
+        if to_dict and res:
+            return cls.row_to_dict(res)
+        return res

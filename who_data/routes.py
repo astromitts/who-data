@@ -4,8 +4,8 @@ def includeme(config):
 
     routes = [
         ('api_v1_ping', '/api/{api_version}/ping'),
-        ('api_v1_country_landing', '/api/{api_version}/countries'),
-        ('api_v1_country', '/api/{api_version}/countries/{country_url_name}'),
+        ('api_v1_country_search', '/api/{api_version}/countries'),
+        ('api_v1_country_resource', '/api/{api_version}/countries/{url_name}'),
     ]
 
     config.add_route

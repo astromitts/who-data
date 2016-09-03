@@ -6,6 +6,6 @@ def notfound_view(request):
     request.response.status = 404
     return {
         "status": "error",
-        "message": "page not found",
+        "message": "resource not found",
         "code": 404,
     }
