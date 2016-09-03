@@ -3,7 +3,7 @@ from pyramid.view import view_config
 from collections import OrderedDict
 import math
 from pyramid.httpexceptions import HTTPNotFound
-from who_data.models.who import Country
+from who_data.models.who import Country, WHODiseaseReport
 
 
 class APIBase(object):
@@ -159,7 +159,34 @@ class APICountryResource(APIResourcePage):
         url_name = self.request.matchdict['url_name']
         resource = Country.fetch_first(url_name=url_name)
         if resource:
-            self.return_dict['resource'] = resource
+            self.return_dict['resource']['country'] = {
+                'name': resource['name'],
+                'alias': resource['alias'],
+                'id': resource['id'],
+            }
+            report_rows = WHODiseaseReport.get_for_country(
+                country_id=resource['id']
+            )
+            report_dicts = OrderedDict()
+            for report in report_rows:
+                report_dicts[report.id] = report_dicts.get(
+                    report.id,
+                    OrderedDict([
+                        ('disease', {
+                            'name': report.name,
+                        }),
+                        ('reports', []),
+                    ])
+                )
+                report_dicts[report.id]['reports'].append(
+                    {
+                        'year': report.year,
+                        'count': report.report_count,
+                    }
+                )
+            self.return_dict['resource']['disease_reports'] = []
+            for key, rd in report_dicts.items():
+                self.return_dict['resource']['disease_reports'].append(rd)
         else:
             raise HTTPNotFound
 

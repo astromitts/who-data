@@ -75,8 +75,12 @@ class APITests(IntegrationTestBase):
         self.assertTrue('api_version' in page.json['meta'])
         self.assertTrue('resource' in page.json)
         self.assertEquals(
-            page.json['resource']['name'],
+            page.json['resource']['country']['name'],
             'Brunei Darussalam'
+        )
+        self.assertTrue('disease_reports' in page.json['resource'])
+        self.assertTrue(
+            len(page.json['resource']['disease_reports']) >= 3
         )
 
     def country_resource_notfound(self):

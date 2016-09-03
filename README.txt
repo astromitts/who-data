@@ -58,6 +58,6 @@ Example, to run ingest module tests:
 Linting
 -------
 This repository is linted using the standard flake8 library,
-ignoring error code E402:
+ignoring error codes E402 and E711:
 
-    $ flake8 --ignore=E402
+    $ flake8 --ignore=E402,E711

@@ -28,6 +28,13 @@ class DatastoreBase(Base):
     @classmethod
     def search(cls, to_dict=True, limit=None, offset=None, **kw):
         q = cls.session.query(cls)
+
+        for k, w in kw.items():
+            if w == 'notnull':
+                q = q.filter(getattr(cls, k) != None)
+            else:
+                q = q.filter(getattr(cls, k) == w)
+
         count = q.count()
         if limit:
             q = q.limit(limit)

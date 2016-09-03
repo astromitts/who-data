@@ -7,42 +7,6 @@ from sqlalchemy.dialects import postgresql
 from .base import DatastoreBase
 
 
-class Country(DatastoreBase):
-    __tablename__ = 'country'
-    id = Column(Text, primary_key=True)  # this should be a 2 char country code
-    name = Column(Text)
-    alias = Column(postgresql.ARRAY(Text))
-    url_name = Column(Text)
-
-    @classmethod
-    def upsert(cls, id, name, url_name, alias):
-        '''
-        update object by id if it exists, otherwise create it
-        '''
-        if not alias:
-            alias = []
-        q = cls.session.query(cls).filter(cls.id == id)
-        existing = q.first()
-        if existing:
-            existing.name = name
-            existing.url_name = url_name
-            if alias:
-                for a in alias:
-                    if a.lower() not in existing.alias:
-                        existing.alias.append(a.lower())
-            cls.session.flush()
-            return existing
-        new_cls = cls(
-            id=id,
-            name=name,
-            url_name=url_name,
-            alias=[a.lower() for a in alias]
-        )
-        cls.session.add(new_cls)
-        cls.session.flush()
-        return new_cls
-
-
 class WHODisease(DatastoreBase):
     __tablename__ = 'disease'
     id = Column(Text, primary_key=True)
@@ -89,6 +53,56 @@ class WHODiseaseReport(DatastoreBase):
             disease_id=disease_id,
             year=year,
             report_count=report_count
+        )
+        cls.session.add(new_cls)
+        cls.session.flush()
+        return new_cls
+
+    @classmethod
+    def get_for_country(cls, country_id):
+        q = cls.session.query(cls).filter(cls.country_id == country_id)
+        q = q.filter(cls.report_count != None)
+        q = q.join(WHODisease, cls.disease_id == WHODisease.id)
+        q = q.add_column(cls.year)
+        q = q.add_column(cls.report_count)
+        q = q.add_column(WHODisease.name)
+        q = q.add_column(WHODisease.id)
+        q = q.order_by(WHODisease.id)
+        q = q.order_by(cls.year.desc())
+        res = q.all()
+        return res
+
+
+class Country(DatastoreBase):
+    __tablename__ = 'country'
+    id = Column(Text, primary_key=True)  # this should be a 2 char country code
+    name = Column(Text)
+    alias = Column(postgresql.ARRAY(Text))
+    url_name = Column(Text)
+
+    @classmethod
+    def upsert(cls, id, name, url_name, alias):
+        '''
+        update object by id if it exists, otherwise create it
+        '''
+        if not alias:
+            alias = []
+        q = cls.session.query(cls).filter(cls.id == id)
+        existing = q.first()
+        if existing:
+            existing.name = name
+            existing.url_name = url_name
+            if alias:
+                for a in alias:
+                    if a.lower() not in existing.alias:
+                        existing.alias.append(a.lower())
+            cls.session.flush()
+            return existing
+        new_cls = cls(
+            id=id,
+            name=name,
+            url_name=url_name,
+            alias=[a.lower() for a in alias]
         )
         cls.session.add(new_cls)
         cls.session.flush()
