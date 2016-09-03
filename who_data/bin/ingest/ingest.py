@@ -1,7 +1,7 @@
 import sys
 import transaction
 from copy import deepcopy
-from who_data.bin.countries import (
+from who_data.lib.countries import (
     Countries,
     CountryAlias,
     sanitize_country_name
@@ -9,6 +9,7 @@ from who_data.bin.countries import (
 from who_data.bin.ingest.lib.who_file_parser import WHOFileParser
 from who_data.bin.ingest import ABSOLUTE_FILE_PATH, primary_entity_file_map
 from who_data.models.who import Country, WHODisease, WHODiseaseReport
+from who_data.lib.urlizer import urlize
 
 
 def main(ini_file):
@@ -21,7 +22,7 @@ def main(ini_file):
         transaction.begin()
         who_disease = WHODisease.upsert(
             id=entity_key,
-            name=entity_data['name']
+            name=entity_data['name'],
         )
         disease_id = deepcopy(who_disease.id)
         transaction.commit()
@@ -34,6 +35,7 @@ def main(ini_file):
             country = Country().upsert(
                 id=py_country.alpha2,
                 name=py_country.name,
+                url_name=urlize(py_country.name),
                 alias=alias
             )
             country_id = deepcopy(country.id)

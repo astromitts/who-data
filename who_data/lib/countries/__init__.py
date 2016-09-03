@@ -27,6 +27,7 @@ known_name_mapping = {
 def sanitize_country_name(name):
     return name.replace('(', '').replace(')', '').replace(',', '').lower()
 
+
 Countries = {}
 CountryAlias = {}
 

@@ -1,3 +1,6 @@
+""" Tests for search views in the WHO Data Pyramid App
+"""
+
 from who_data.tests import IntegrationTestBase
 
 

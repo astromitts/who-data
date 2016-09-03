@@ -24,9 +24,11 @@ def upgrade():
         'country',
         sa.Column('id', sa.Text, nullable=False),
         sa.Column('name', sa.Text, nullable=False),
+        sa.Column('url_name', sa.Text, nullable=False),
         sa.Column('alias', postgresql.ARRAY(sa.String())),
         sa.PrimaryKeyConstraint('id', name='pk_country_id'),
         sa.UniqueConstraint('name', name='uq_country_name'),
+        sa.UniqueConstraint('url_name', name='uq_country_url_name'),
         schema='datastore'
     )
     op.execute(

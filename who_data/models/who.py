@@ -12,9 +12,10 @@ class Country(DatastoreBase):
     id = Column(Text, primary_key=True)  # this should be a 2 char country code
     name = Column(Text)
     alias = Column(postgresql.ARRAY(Text))
+    url_name = Column(Text)
 
     @classmethod
-    def upsert(cls, id, name, alias):
+    def upsert(cls, id, name, url_name, alias):
         '''
         update object by id if it exists, otherwise create it
         '''
@@ -24,6 +25,7 @@ class Country(DatastoreBase):
         existing = q.first()
         if existing:
             existing.name = name
+            existing.url_name = url_name
             if alias:
                 for a in alias:
                     if a.lower() not in existing.alias:
@@ -33,6 +35,7 @@ class Country(DatastoreBase):
         new_cls = cls(
             id=id,
             name=name,
+            url_name=url_name,
             alias=[a.lower() for a in alias]
         )
         cls.session.add(new_cls)
