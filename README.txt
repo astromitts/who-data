@@ -33,6 +33,20 @@ Setup
 	- run alembic upgrades
 		$ alembic upgrade head
 
+Data Ingestion
+--------------
+To ingest data into the database, make sure you have CSV files that are mapped
+in the file who_data.bin.ingest.bin.file_map
+
+They should look something like:
+Country,Reported cases; 2014,Reported cases; 2013,Reported cases; 2012 ....
+United States, 7583, 8275, 2575 ....
+
+Run the ingest script and pass in an INI file for the configuration of the 
+database you wish to populate:
+	$ python who_data/bin/ingest/ingest.py development.ini
+
+
 Tests
 -----
 Run tests with the nosetests command or run tests for a specific function.
