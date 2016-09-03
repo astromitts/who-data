@@ -1,27 +1,54 @@
 import sys
 import transaction
-from who_data.bin.countries import Countries, sanitize_country_name
+from copy import deepcopy
+from who_data.bin.countries import (
+    Countries,
+    CountryAlias,
+    sanitize_country_name
+)
 from who_data.bin.ingest.bin.file_map import primary_entity_file_map
 from who_data.bin.ingest.lib.who_file_parser import WHOFileParser
 from who_data.bin.ingest import ABSOLUTE_FILE_PATH
-from who_data.models.who import Country
+from who_data.models.who import Country, WHODisease, WHODiseaseReport
 
 
 def main(ini_file):
     from who_data.models.base import Base, DBSession, set_engine
     set_engine(ini_file, Base, DBSession)
-    for entity_key, file_name in primary_entity_file_map.items():
-        file_path = ABSOLUTE_FILE_PATH + file_name
+    for entity_key, entity_data in primary_entity_file_map.items():
+        file_path = ABSOLUTE_FILE_PATH + entity_data['file']
         parsed_file = WHOFileParser(entity_key, file_path)
         parsed_file.parse()
+        transaction.begin()
+        who_disease = WHODisease.upsert(
+            id=entity_key,
+            name=entity_data['name']
+        )
+        disease_id = deepcopy(who_disease.id)
+        transaction.commit()
+
         for row in parsed_file.data:
-            transaction.begin()
             safe_country_name = sanitize_country_name(row['country'])
             py_country = Countries[safe_country_name]
-            country = Country().create_get_by_id(
+            alias = CountryAlias.get(py_country.name)
+            transaction.begin()
+            country = Country().upsert(
                 id=py_country.alpha2,
-                name=py_country.name
+                name=py_country.name,
+                alias=alias
             )
+            country_id = deepcopy(country.id)
+            transaction.commit()
+
+            transaction.begin()
+            for year, report_count in row['reports_by_year'].items():
+
+                WHODiseaseReport.upsert(
+                    country_id=country_id,
+                    disease_id=disease_id,
+                    year=year,
+                    report_count=report_count,
+                )
             transaction.commit()
 
 

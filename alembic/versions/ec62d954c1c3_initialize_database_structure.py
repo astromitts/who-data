@@ -14,6 +14,7 @@ depends_on = None
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 def upgrade():
@@ -23,12 +24,17 @@ def upgrade():
         'country',
         sa.Column('id', sa.Text, nullable=False),
         sa.Column('name', sa.Text, nullable=False),
+        sa.Column('alias', postgresql.ARRAY(sa.String())),
         sa.PrimaryKeyConstraint('id', name='pk_country_id'),
         sa.UniqueConstraint('name', name='uq_country_name'),
         schema='datastore'
     )
-    op.execute('create index ix_country_name on datastore.country(name)')
-
+    op.execute(
+        'create index ix_country_name_lower on datastore.country(lower(name))'
+    )
+    op.execute('create index ix_country_alias_lower on datastore.country '
+        'using gin ("alias")'
+    )
     op.create_table(
         'disease',
         sa.Column('id', sa.Text, nullable=False),
@@ -47,7 +53,7 @@ def upgrade():
         sa.Column('country_id', sa.Text, nullable=False),
         sa.Column('disease_id', sa.Text, nullable=False),
         sa.Column('year', sa.INTEGER, nullable=False),
-        sa.Column('count', sa.INTEGER, nullable=False),
+        sa.Column('report_count', sa.INTEGER),
         sa.PrimaryKeyConstraint('id', name='pk_disease_report_id'),
         sa.UniqueConstraint(
             'year',
@@ -64,6 +70,10 @@ def upgrade():
             columns=['country_id'], refcolumns=['datastore.country.id']
         ),
         schema='datastore'
+    )
+    op.execute(
+        'create index ix_disease_report_count on '
+        'datastore.disease_report(report_count)'
     )
 
 
