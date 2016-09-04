@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import pycountry
 
 # these countries are known variations from WHO compared to the
