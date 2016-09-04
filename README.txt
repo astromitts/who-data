@@ -5,6 +5,10 @@ This is a library that will serve a data ingestion and parsing library
 and web application which will store and search on open source data 
 taken from the WHO website.
 
+You can use a running instance of this repository at:
+
+    http://who-data.herokuapp.com
+
 
 Requirements
 ------------
