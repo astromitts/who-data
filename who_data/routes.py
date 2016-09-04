@@ -3,6 +3,7 @@ def includeme(config):
     config.route_prefix = config.get_settings().get('url_prefix')
 
     routes = [
+        ('home', ''),
         ('api_v1_ping', '/api/{api_version}/ping'),
         ('api_v1_country_search', '/api/{api_version}/countries'),
         ('api_v1_country_resource', '/api/{api_version}/countries/{url_name}'),
