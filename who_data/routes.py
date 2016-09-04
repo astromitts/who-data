@@ -9,6 +9,8 @@ def includeme(config):
         ('api_v1_country_resource', '/api/{api_version}/countries/{url_name}'),
         ('api_v1_disease_search', '/api/{api_version}/diseases'),
         ('api_v1_disease_resource', '/api/{api_version}/diseases/{url_name}'),
+        ('api_v1_disease_year_resource',
+            '/api/{api_version}/diseases/{url_name}/{year}'),
     ]
 
     config.add_route

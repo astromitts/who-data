@@ -13,5 +13,6 @@ def home_view(request):
     ),
     hello['links'] = [
         request.route_url('api_v1_country_search', api_version='v1'),
+        request.route_url('api_v1_disease_search', api_version='v1'),
     ]
     return hello

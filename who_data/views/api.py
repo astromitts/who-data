@@ -21,6 +21,8 @@ class APIBase(object):
         if not self.api_version:
             raise HTTPNotFound
 
+        self.api_version_string = request.matchdict['api_version']
+
 
 class APISearchablePage(APIBase):
     """
@@ -125,8 +127,8 @@ class APICountryLanding(APISearchablePage):
                     'name': row['name'],
                     'link': self.request.route_url(
                         'api_v1_country_resource',
-                        api_version='v%s' % self.api_version,
-                        url_name=row['url_name']
+                        api_version=self.api_version_string,
+                        disease_id=row['disease_id']
                     )
                 }
             )
@@ -147,7 +149,7 @@ class APIDiseaseLanding(APISearchablePage):
                     'name': row['name'],
                     'link': self.request.route_url(
                         'api_v1_disease_resource',
-                        api_version='v%s' % self.api_version,
+                        api_version=self.api_version_string,
                         url_name=row['id']
                     ),
                     'information_link': row['info_link']
@@ -197,6 +199,11 @@ class APICountryResource(APIResourcePage):
                     OrderedDict([
                         ('disease', {
                             'name': report.name,
+                            'link': self.request.route_url(
+                                'api_v1_disease_resource',
+                                api_version=self.api_version_string,
+                                url_name=report.id
+                            )
                         }),
                         ('reports', []),
                     ])
@@ -205,11 +212,93 @@ class APICountryResource(APIResourcePage):
                     {
                         'year': report.year,
                         'count': report.report_count,
+                        'link': self.request.route_url(
+                            'api_v1_disease_year_resource',
+                            api_version=self.api_version_string,
+                            url_name=report.id,
+                            year=report.year,
+                        )
                     }
                 )
             self.return_dict['resource']['disease_reports'] = []
             for key, rd in report_dicts.items():
                 self.return_dict['resource']['disease_reports'].append(rd)
+        else:
+            raise HTTPNotFound
+
+        return self.return_dict
+
+@view_config(route_name='api_v1_disease_resource', renderer='json')
+class APIDiseaseResource(APIResourcePage):
+
+    def __call__(self):
+        disease_id = self.request.matchdict['url_name']
+        resource = WHODisease.fetch_first(id=disease_id)
+        if resource:
+            self.return_dict['resource']['disease'] = OrderedDict([
+                ('name', resource['name']),
+                ('information_link', resource['info_link']),
+                ('available_years', []),
+            ])
+            years_available = WHODiseaseReport.fetch_distinct_years(
+                disease_id=disease_id
+            )
+            year_list = (
+                self.return_dict['resource']['disease']['available_years']
+            )
+            for year in years_available:
+                year_list.append(
+                    {
+                        'year': year.year,
+                        'link': self.request.route_url(
+                            'api_v1_disease_year_resource',
+                            api_version=self.api_version_string,
+                            url_name=disease_id,
+                            year=year.year
+                        )
+                    }
+                )
+        else:
+            raise HTTPNotFound
+
+        return self.return_dict
+
+@view_config(route_name='api_v1_disease_year_resource', renderer='json')
+class APIDiseaseYearResource(APIResourcePage):
+
+    def __call__(self):
+        disease_id = self.request.matchdict['url_name']
+        year = int(self.request.matchdict['year'])
+
+        # optionally return only non-zero counts:
+        nonzero = self.request.GET.get('nonzero', 'false') == 'true'
+        resource = WHODisease.fetch_first(id=disease_id)
+        if resource:
+            self.return_dict['resource']['disease'] = OrderedDict([
+                ('name', resource['name']),
+                ('information_link', resource['info_link']),
+                ('reports_by_country', []),
+            ])
+            country_reports = WHODiseaseReport.get_for_year(
+                disease_id=disease_id,
+                year=year,
+                nonzero=nonzero
+            )
+            reports = (
+                self.return_dict['resource']['disease']['reports_by_country']
+            )
+            for cr in country_reports:
+                reports.append(
+                    {
+                        'country': cr.name,
+                        'link': self.request.route_url(
+                            'api_v1_country_resource',
+                            url_name=cr.url_name,
+                            api_version=self.api_version_string
+                        ),
+                        'count': cr.report_count
+                    }
+                )
         else:
             raise HTTPNotFound
 

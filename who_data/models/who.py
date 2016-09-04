@@ -75,6 +75,31 @@ class WHODiseaseReport(DatastoreBase):
         res = q.all()
         return res
 
+    @classmethod
+    def fetch_distinct_years(cls, disease_id):
+        q = cls.session.query(cls.year).distinct()
+        q = q.filter(cls.disease_id == disease_id)
+        q = q.order_by(cls.year.desc())
+        return q.all()
+
+    @classmethod
+    def get_for_year(cls, disease_id, year, nonzero=False):
+        q = cls.session.query(cls)
+        q = q.filter(cls.year == year)
+        q = q.filter(cls.disease_id == disease_id)
+        q = q.filter(cls.report_count != None)
+        if nonzero:
+            q = q.filter(cls.report_count > 0)
+        q = q.join(Country, cls.country_id == Country.id)
+        q = q.add_column(cls.year)
+        q = q.add_column(cls.country_id)
+        q = q.add_column(cls.report_count)
+        q = q.add_column(Country.name)
+        q = q.add_column(Country.url_name)
+        q = q.order_by(Country.name)
+        res = q.all()
+        return res
+
 
 class Country(DatastoreBase):
     __tablename__ = 'country'
