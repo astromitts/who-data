@@ -23,6 +23,7 @@ def main(ini_file):
         who_disease = WHODisease.upsert(
             id=entity_key,
             name=entity_data['name'],
+            info_link=entity_data['information-link'],
         )
         disease_id = deepcopy(who_disease.id)
         transaction.commit()

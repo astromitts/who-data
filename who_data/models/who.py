@@ -11,18 +11,21 @@ class WHODisease(DatastoreBase):
     __tablename__ = 'disease'
     id = Column(Text, primary_key=True)
     name = Column(Text)
+    info_link = Column(Text)
 
     @classmethod
-    def upsert(cls, id, name):
+    def upsert(cls, id, name, info_link):
         q = cls.session.query(cls).filter(cls.id == id)
         existing = q.first()
         if existing:
             existing.name = name
+            existing.info_link = info_link
             cls.session.flush()
             return existing
         new_cls = cls(
             id=id,
             name=name,
+            info_link=info_link,
         )
         cls.session.add(new_cls)
         cls.session.flush()

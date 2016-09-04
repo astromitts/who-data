@@ -3,7 +3,7 @@ from pyramid.view import view_config
 from collections import OrderedDict
 import math
 from pyramid.httpexceptions import HTTPNotFound
-from who_data.models.who import Country, WHODiseaseReport
+from who_data.models.who import Country, WHODisease, WHODiseaseReport
 
 
 class APIBase(object):
@@ -128,6 +128,29 @@ class APICountryLanding(APISearchablePage):
                         api_version='v%s' % self.api_version,
                         url_name=row['url_name']
                     )
+                }
+            )
+
+
+@view_config(route_name='api_v1_disease_search', renderer='json')
+class APIDiseaseLanding(APISearchablePage):
+    _per_page_limit = 25
+    model = WHODisease
+
+    def __format_results__(self, result_rows):
+        """
+        Override result format function
+        """
+        for row in result_rows:
+            self.return_dict['results']['items'].append(
+                {
+                    'name': row['name'],
+                    'link': self.request.route_url(
+                        'api_v1_disease_resource',
+                        api_version='v%s' % self.api_version,
+                        url_name=row['id']
+                    ),
+                    'information_link': row['info_link']
                 }
             )
 
