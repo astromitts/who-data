@@ -128,7 +128,7 @@ class APICountryLanding(APISearchablePage):
                     'link': self.request.route_url(
                         'api_v1_country_resource',
                         api_version=self.api_version_string,
-                        disease_id=row['disease_id']
+                        url_name=row['url_name']
                     )
                 }
             )
