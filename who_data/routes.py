@@ -1,6 +1,6 @@
 def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
-    config.route_prefix = 'who-data'
+    config.route_prefix = config.get_settings().get('url_prefix')
 
     routes = [
         ('api_v1_ping', '/api/{api_version}/ping'),
