@@ -174,6 +174,11 @@ class APIDiseaseLanding(APISearchablePage):
                         api_version=self.api_version_string,
                         url_name=row['id']
                     ),
+                    'search_link': self.request.route_url(
+                        'api_v1_disease_search',
+                        api_version=self.api_version_string,
+                        url_name=row['id']
+                    ),
                     'information_link': row['info_link']
                 }
             )

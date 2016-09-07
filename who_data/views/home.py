@@ -13,6 +13,29 @@ def home_view(request):
     ),
     hello['links'] = [
         request.route_url('api_v1_country_search', api_version='v1'),
-        request.route_url('api_v1_disease_search', api_version='v1'),
+        request.route_url('api_v1_disease_landing', api_version='v1'),
+    ]
+    hello['search-examples'] = [
+        '%s?count=100:&year=1995:' % (
+            request.route_url(
+                'api_v1_disease_search',
+                api_version='v1',
+                url_name='buruli-ulcer'
+            )
+        ),
+        '%s?count=100000:200000' % (
+            request.route_url(
+                'api_v1_disease_search',
+                api_version='v1',
+                url_name='buruli-ulcer'
+            )
+        ),
+        '%s?country=us' % (
+            request.route_url(
+                'api_v1_disease_search',
+                api_version='v1',
+                url_name='rabies'
+            )
+        ),
     ]
     return hello

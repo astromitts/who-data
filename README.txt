@@ -88,3 +88,19 @@ your database configuration, run with paster:
 
 Navigate to an API url, such as:
     http://localhost:<your-port-number/who-data/api/v1/countries
+
+Searching with the API
+----------------------
+Some routes allow you to search the API results by adding queries to the URL
+Examples:
+    to search for disease reports for a given year:
+    <host>/who-data/api/v1/diseases/guinea-worm/search?year=1989
+
+    to search within a range of years:
+    <host>/who-data/api/v1/diseases/guinea-worm/search?year=1989:1995
+
+    to search for a range of years after a given year:
+    <host>/who-data/api/v1/diseases/guinea-worm/search?year=1989:
+
+    to search for a range of years before a given year:
+    <host>/who-data/api/v1/diseases/guinea-worm/search?year=:1995
