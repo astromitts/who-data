@@ -4,6 +4,7 @@ from collections import OrderedDict
 import math
 from pyramid.httpexceptions import HTTPNotFound
 from who_data.models.who import Country, WHODisease, WHODiseaseReport
+from who_data.models.v_report_search import ReportSearch
 
 
 class APIBase(object):
@@ -42,6 +43,19 @@ class APISearchablePage(APIBase):
         if self._per_page_limit:
             self._offset = (self._page - 1) * self._per_page_limit
 
+        self.search_terms = {}
+        query_strings = []
+        for param in self.request.GET:
+            if param != '_page':
+                self.search_terms[param] = self.request.GET[param]
+                query_strings.append(
+                    '%s=%s' % (param, self.request.GET[param])
+                )
+        if len(query_strings) > 0:
+            self.query_string = '&'.join(query_strings)
+        else:
+            self.query_string = None
+
         self.return_dict = OrderedDict()
 
         # all searches should return the following properties:
@@ -75,16 +89,23 @@ class APISearchablePage(APIBase):
         self.return_dict['results']['total_pages'] = total_pages
         self.return_dict['results']['total_page_items'] = total_page_items
 
+        if self.query_string:
+            meta_link_base = self._link_base + '?%s&' % self.query_string
+        else:
+            meta_link_base = self._link_base + '?'
+
         # set previous link
-        if self._page > 1:
+        if self._page == 2:
+            self.return_dict['meta']['prev_link'] = meta_link_base[:-1]
+        elif self._page > 1:
             self.return_dict['meta']['prev_link'] = (
-                self._link_base + '?_page=%s' % (self._page - 1)
+                meta_link_base + '_page=%s' % (self._page - 1)
             )
 
         # set next link
         if self._page < total_pages:
             self.return_dict['meta']['next_link'] = (
-                self._link_base + '?_page=%s' % (self._page + 1)
+                meta_link_base + '_page=%s' % (self._page + 1)
             )
 
     def __format_results__(self, result_rows):
@@ -100,6 +121,7 @@ class APISearchablePage(APIBase):
         count, rows = self.model.search(
             limit=self._per_page_limit,
             offset=self._offset,
+            search_terms=self.search_terms
         )
         self.return_dict['results']['total_items'] = count
         self.__format_results__(rows)
@@ -134,7 +156,7 @@ class APICountryLanding(APISearchablePage):
             )
 
 
-@view_config(route_name='api_v1_disease_search', renderer='json')
+@view_config(route_name='api_v1_disease_landing', renderer='json')
 class APIDiseaseLanding(APISearchablePage):
     _per_page_limit = 25
     model = WHODisease
@@ -155,6 +177,50 @@ class APIDiseaseLanding(APISearchablePage):
                     'information_link': row['info_link']
                 }
             )
+
+
+@view_config(route_name='api_v1_disease_search', renderer='json')
+class APIDiseaseSearch(APISearchablePage):
+    _per_page_limit = 25
+    model = ReportSearch
+
+    def __format_results__(self, result_rows):
+        """
+        Format result rows and add them to api return structure
+        By default, just append the rows as-is
+        Override this function for resource specific formatting
+        """
+        for result in result_rows:
+            self.return_dict['results']['items'].append(
+                OrderedDict([
+                    ('count', result['count']),
+                    ('year', result['year']),
+                    ('country', {
+                        'id': result['country_id'],
+                        'link': self.request.route_url(
+                            'api_v1_country_resource',
+                            api_version=self.api_version_string,
+                            url_name=result['country_url_name']
+                        ),
+                    },
+                    ),
+                ])
+            )
+
+    def __fetch_items__(self):
+        disease_id = self.request.matchdict['url_name']
+        self.search_terms.update(
+            {
+                'disease_id': disease_id,
+            }
+        )
+        count, rows = self.model.search(
+            limit=self._per_page_limit,
+            offset=self._offset,
+            search_terms=self.search_terms
+        )
+        self.return_dict['results']['total_items'] = count
+        self.__format_results__(rows)
 
 
 class APIResourcePage(APIBase):
@@ -228,6 +294,7 @@ class APICountryResource(APIResourcePage):
 
         return self.return_dict
 
+
 @view_config(route_name='api_v1_disease_resource', renderer='json')
 class APIDiseaseResource(APIResourcePage):
 
@@ -262,6 +329,7 @@ class APIDiseaseResource(APIResourcePage):
             raise HTTPNotFound
 
         return self.return_dict
+
 
 @view_config(route_name='api_v1_disease_year_resource', renderer='json')
 class APIDiseaseYearResource(APIResourcePage):

@@ -7,8 +7,10 @@ def includeme(config):
         ('api_v1_ping', '/api/{api_version}/ping'),
         ('api_v1_country_search', '/api/{api_version}/countries'),
         ('api_v1_country_resource', '/api/{api_version}/countries/{url_name}'),
-        ('api_v1_disease_search', '/api/{api_version}/diseases'),
+        ('api_v1_disease_landing', '/api/{api_version}/diseases'),
         ('api_v1_disease_resource', '/api/{api_version}/diseases/{url_name}'),
+        ('api_v1_disease_search',
+            '/api/{api_version}/diseases/{url_name}/search'),
         ('api_v1_disease_year_resource',
             '/api/{api_version}/diseases/{url_name}/{year}'),
     ]

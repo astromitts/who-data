@@ -1,6 +1,9 @@
 from sqlalchemy import create_engine
 import configparser
+import re
 from .meta import Base, DBSession
+
+NUMERICAL_RANGE_PATTERN = re.compile("^[0-9]*:[0-9]*$")
 
 
 def set_engine(ini, Base, DBSession):
@@ -26,7 +29,12 @@ class DatastoreBase(Base):
         return row_dict
 
     @classmethod
-    def search(cls, to_dict=True, limit=None, offset=None, **kw):
+    def order_search(cls, q):
+        return q
+
+    @classmethod
+    def search(cls, to_dict=True, limit=None, offset=None,
+               search_terms={}, **kw):
         q = cls.session.query(cls)
 
         for k, w in kw.items():
@@ -35,7 +43,24 @@ class DatastoreBase(Base):
             else:
                 q = q.filter(getattr(cls, k) == w)
 
+        for field, phrase in search_terms.items():
+            if hasattr(cls, 'filter_{}'.format(field)):
+                filter_func = getattr(cls, 'filter_{}'.format(field))
+                q = filter_func(q, phrase)
+            else:
+                if phrase == 'notnull':
+                    q = q.filter(getattr(cls, field) != None)
+                elif NUMERICAL_RANGE_PATTERN.match(phrase):
+                    ranges = phrase.split(':')
+                    if ranges[0]:
+                        q = q.filter(getattr(cls, field) >= ranges[0])
+                    if ranges[1]:
+                        q = q.filter(getattr(cls, field) <= ranges[1])
+                else:
+                    q = q.filter(getattr(cls, field) == phrase)
+
         count = q.count()
+        q = cls.order_search(q)
         if limit:
             q = q.limit(limit)
         if offset:

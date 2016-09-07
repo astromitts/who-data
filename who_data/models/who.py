@@ -2,7 +2,9 @@ from sqlalchemy import (
     Column,
     Integer,
     Text,
+    or_,
 )
+from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
 from .base import DatastoreBase
 
@@ -107,6 +109,36 @@ class Country(DatastoreBase):
     name = Column(Text)
     alias = Column(postgresql.ARRAY(Text))
     url_name = Column(Text)
+
+    @classmethod
+    def filter_name(cls, q, phrase):
+        '''
+        specific filter logic for filtering on the name field so that
+        the name field and the alias field and the country code (ID) field
+        are all searched on
+        '''
+        search_phrase = '%%%s%%' % phrase.lower()
+        alias_phrase = '{"%s"}' % (phrase.lower())
+
+        # if 2 characters were provided, search for country code and alias
+        # matches only
+        if len(phrase) == 2:
+            q = q.filter(
+                or_(
+                    cls.id == phrase.upper(),
+                    cls.alias.contains(alias_phrase),
+                )
+
+            )
+        else:
+            q = q.filter(
+                or_(
+                    func.lower(cls.name).like(search_phrase),
+                    cls.alias.contains(alias_phrase),
+                )
+
+            )
+        return q
 
     @classmethod
     def upsert(cls, id, name, url_name, alias):
