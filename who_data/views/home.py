@@ -27,7 +27,7 @@ def home_view(request):
             request.route_url(
                 'api_v1_disease_search',
                 api_version='v1',
-                url_name='buruli-ulcer'
+                url_name='guinea-worm'
             )
         ),
         '%s?country=us' % (
